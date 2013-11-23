@@ -115,7 +115,7 @@ window.WaniKaniAPI = (function() {
       setAPIKey(apiKey);
       alert('JeshuaM Scripts: API Key Saved! ' + apiKey);
     }
-  })
+  });
 
   GM_registerMenuCommand('JeshuaM Scripts: Reset API Key', function() {
     WaniKaniAPI.deleteAPIKey();
@@ -124,3 +124,5 @@ window.WaniKaniAPI = (function() {
 
   return WaniKaniAPI;
 })();
+
+console.log("YEY");
