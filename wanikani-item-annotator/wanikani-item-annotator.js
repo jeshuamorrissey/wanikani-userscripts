@@ -3,6 +3,7 @@
 // @version    1.0
 // @description  Annoates item on the radical, kanji and vocab pages with their SRS level.
 // @require https://domready.googlecode.com/files/domready.js
+// @require https://raw.github.com/jeshuam/wanikani-userscripts/master/utility/api.js
 // @include http://www.wanikani.com/radical*
 // @include http://www.wanikani.com/kanji*
 // @include http://www.wanikani.com/vocabulary*
@@ -11,120 +12,6 @@
 // ==/UserScript==
 
 DomReady.ready(function() {
-  /**
-   * Utilities for getting the API key and such. Change these to use something else if this script
-   * is ever converted to an extension.
-   */
-  // Key to use when fetching the API key.
-  var API_RETREIVAL_KEY = 'jeshuam-wanikani-apikey';
-
-  // Get the API key from storage.
-  function getAPIKey() {
-    return GM_getValue(API_RETREIVAL_KEY);
-  }
-
-  // Set the API key to a given value.
-  function setAPIKey(apiKey) {
-    GM_setValue(API_RETREIVAL_KEY, apiKey);
-  }
-
-  // Delete the API key.
-  function deleteAPIKey() {
-    GM_deleteValue(API_RETREIVAL_KEY);
-  }
-
-  /**
-   * If we are on the user profile page, fetch the API key. Also register a GM handler for
-   * adding the API key manually.
-   */
-  if (window.location.href.indexOf('account') >= 0) {
-    // Make sure the API key isn't already there.
-    if (getAPIKey()) {
-      return;
-    }
-
-    // Required function because the API key has no ID on it. :(
-    function getAPIKeyFromDom() {
-      // Look through all .span6's for the API key. We can identify the API key by the
-      // placeholder text.
-      var elementsToSearch = document.querySelectorAll('.span6');
-      for (var i in elementsToSearch) {
-        var element = elementsToSearch[i];
-        if (element.placeholder === 'Key has not been generated') {
-          return element.value;
-        }
-      }
-
-      // Couldn't find it :(
-      return null;
-    }
-
-    // Find the API key.
-    setAPIKey(getAPIKeyFromDom());
-    alert('JeshuaM Scripts: API Key Saved! ' + getAPIKey());
-  }
-
-  // Register the GM handler.
-  GM_registerMenuCommand('JeshuaM Scripts: Change API Key', function() {
-    var apiKey = prompt('Please enter your API key.', getAPIKey() || '');
-    if (apiKey != null) {
-      setAPIKey(apiKey);
-      alert('JeshuaM Scripts: API Key Saved! ' + apiKey);
-    }
-  })
-
-  GM_registerMenuCommand('JeshuaM Scripts: Reset API Key', function() {
-    deleteAPIKey();
-    alert('JeshuaM Scripts: API Key Deleted!');
-  });
-
-  /**
-   * Perform a raw AJAX GET request for the given URL, and call `callback` with the response.
-   * Adapted from http://net.tutsplus.com/articles/news/how-to-make-ajax-requests-with-raw-javascript/
-   */
-  function load(url, callback) {
-    var xhr;
-
-    // Get the XHR element first.
-    if (typeof XMLHttpRequest !== 'undefined') {
-      xhr = new XMLHttpRequest();
-    } else {
-      var versions = ["MSXML2.XmlHttp.5.0",
-                      "MSXML2.XmlHttp.4.0",
-                      "MSXML2.XmlHttp.3.0",
-                      "MSXML2.XmlHttp.2.0",
-                      "Microsoft.XmlHttp"]
-
-      for(var i = 0, len = versions.length; i < len; i++) {
-        try {
-          xhr = new ActiveXObject(versions[i]);
-          break;  
-        } catch(e) {
-
-        }
-      }
-    }
-
-    // Function to execute when the state of the XHR request changes.
-    xhr.onreadystatechange = function() {
-      if(xhr.readyState < 4) {
-        return;
-      }
-
-      if(xhr.status !== 200) {
-        return;
-      }
-
-      if(xhr.readyState === 4) {
-        callback(xhr);
-      }
-    };
-
-    // Start the request.
-    xhr.open('GET', url, true);
-    xhr.send('');
-  }
-
   /**
    * Mapping of SRS --> Object, where the object contains a series
    * of transformation colors. These transformations will be applied
@@ -226,15 +113,13 @@ DomReady.ready(function() {
     target = 'radicals';
   }
 
-  // Build the API URL, but die if the API key isn't found.
-  if (!getAPIKey) {
+  // Die if the API key isn't found.
+  if (!WaniKaniAPI.getAPIKey) {
     return;
   }
 
-  var API_URL = 'http://www.wanikani.com/api/user/' + getAPIKey();
-
   // Load the API data.
-  load(API_URL + '/' + target, function(xhr) {
+  WaniKaniAPI.load('http://www.wanikani.com/api/user/' + WaniKaniAPI.getAPIKey() + '/' + target, function(xhr) {
     // Parse the response.
     var response = JSON.parse(xhr.response);
 
@@ -261,11 +146,11 @@ DomReady.ready(function() {
         character = item.meaning.toLowerCase().replace('-', ' ');
       }
 
-      // Get the SRS level from the item. The 'stats' object will be `null` if the item
+      // Get the SRS level from the item. The 'user_specific' object will be `null` if the item
       // hasn't been unlocked yet. In this case, just set the SRS level to `null`.
       var srs = null;
-      if (item.stats) {
-        srs = item.stats.srs;
+      if (item.user_specific) {
+        srs = item.user_specific.srs;
       }
 
       // Build the mapping for this character.
