@@ -108,8 +108,6 @@
     }
   };
 
-  console.log(WaniKaniAPI);
-
   // Register some GreaseMonkey commands.
   GM_registerMenuCommand('JeshuaM Scripts: Change API Key', function() {
     var apiKey = prompt('Please enter your API key.', WaniKaniAPI.getAPIKey() || '');
@@ -124,5 +122,3 @@
     alert('JeshuaM Scripts: API Key Deleted!');
   });
 })();
-
-console.log(WaniKaniAPI);
