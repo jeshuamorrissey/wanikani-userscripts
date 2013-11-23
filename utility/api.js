@@ -124,3 +124,5 @@
     alert('JeshuaM Scripts: API Key Deleted!');
   });
 })();
+
+console.log(WaniKaniAPI);
