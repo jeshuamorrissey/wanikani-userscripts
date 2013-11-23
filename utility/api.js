@@ -119,7 +119,7 @@
   GM_registerMenuCommand('JeshuaM Scripts: Change API Key', function() {
     var apiKey = prompt('Please enter your API key.', WaniKaniAPI.getAPIKey() || '');
     if (apiKey != null) {
-      setAPIKey(apiKey);
+      WaniKaniAPI.setAPIKey(apiKey);
       alert('JeshuaM Scripts: API Key Saved! ' + apiKey);
     }
   });
