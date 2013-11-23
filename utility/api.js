@@ -62,6 +62,13 @@
     },
 
     /**
+     * Get the API base URL.
+     */
+    apiURL: function(action) {
+      return 'http://www.wanikani.com/api/1.2/user/' + WaniKaniAPI.getAPIKey() + '/' + action;
+    },
+
+    /**
      * Make an AJAX request to the given API url, and call `callback` when finished.
      */
     load: function(url, callback) {
