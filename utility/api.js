@@ -2,7 +2,7 @@
  * WaniKani API utilities, for use within userscripts.
  * Just place this script in the @require section of the userscript header.
  */
-window.WaniKaniAPI = (function() {
+WaniKaniAPI = (function() {
   // Common key to use for the API key.
   var API_RETREIVAL_KEY = 'jeshuam-wanikani-apikey';
 
