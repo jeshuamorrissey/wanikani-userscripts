@@ -121,4 +121,6 @@ window.WaniKaniAPI = (function() {
     WaniKaniAPI.deleteAPIKey();
     alert('JeshuaM Scripts: API Key Deleted!');
   });
+
+  return WaniKaniAPI;
 })();
