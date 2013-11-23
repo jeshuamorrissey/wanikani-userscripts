@@ -64,7 +64,7 @@ window.WaniKaniAPI = (function() {
     /**
      * Make an AJAX request to the given API url, and call `callback` when finished.
      */
-    call: function(url, callback) {
+    load: function(url, callback) {
       var xhr;
 
       // Get the XHR element first.
@@ -124,5 +124,3 @@ window.WaniKaniAPI = (function() {
 
   return WaniKaniAPI;
 })();
-
-console.log("YEY");
