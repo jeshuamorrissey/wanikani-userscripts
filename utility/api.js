@@ -2,11 +2,11 @@
  * WaniKani API utilities, for use within userscripts.
  * Just place this script in the @require section of the userscript header.
  */
-WaniKaniAPI = (function() {
+(function() {
   // Common key to use for the API key.
   var API_RETREIVAL_KEY = 'jeshuam-wanikani-apikey';
 
-  var WaniKaniAPI = {
+  var WaniKaniAPI = window.WaniKaniAPI = {
     /**
      * Get the API key from storage and return it. If it doesn't exist, return null.
      */
@@ -47,7 +47,7 @@ WaniKaniAPI = (function() {
           for (var i in elementsToSearch) {
             var element = elementsToSearch[i];
             if (element.placeholder === 'Key has not been generated') {
-              return element.value;
+              return element.value.trim();
             }
           }
 
@@ -121,6 +121,4 @@ WaniKaniAPI = (function() {
     WaniKaniAPI.deleteAPIKey();
     alert('JeshuaM Scripts: API Key Deleted!');
   });
-
-  return WaniKaniAPI;
-})();
+});
