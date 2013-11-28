@@ -75,14 +75,14 @@ DomReady.ready(function() {
       var japaneseElement = element.querySelector('.character');
 
       // The japanese value to look up in the item mapping is the text of this element.
-      var japanese = japaneseElement.innerText;
+      var japanese = japaneseElement.textContent;
 
       // If we happen to be looking at radicals, some of them use pictures instead. It is
       // simpler to use the radical meaning in this case (as there is only one meaning).
       // The meaning is stored in the last list element within the element (for some reason
       // there is a &nbsp; list element first).
       if (target === 'radicals') {
-        japanese = element.querySelectorAll('li')[1].innerText.toLowerCase();
+        japanese = element.querySelectorAll('li')[1].textContent.toLowerCase();
       }
 
       // Find the actual japanese SRS information.
@@ -101,7 +101,7 @@ DomReady.ready(function() {
       element.style['background'] =
           colors.background 
           + ' linear-gradient(to bottom, ' + colors.gradient_start + ', ' + colors.gradient_end + ')';
-      element.style['border-color'] = colors.border;
+      element.style['borderColor'] = colors.border;
     }
   }
 
@@ -119,7 +119,7 @@ DomReady.ready(function() {
   }
 
   // Load the API data.
-  WaniKaniAPI.load('http://www.wanikani.com/api/user/' + WaniKaniAPI.getAPIKey() + '/' + target, function(xhr) {
+  WaniKaniAPI.load(WaniKaniAPI.apiURL(target), function(xhr) {
     // Parse the response.
     var response = JSON.parse(xhr.response);
 
