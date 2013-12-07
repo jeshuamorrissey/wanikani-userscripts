@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name       WaniKani Markdown Notes
-// @version    1.0
+// @version    1.1
 // @description  Allows you to write Markdown in the notes, which will be rendered as HTML when the page loads. 
 // @require https://raw.github.com/coreyti/showdown/master/src/showdown.js
 // @include http://www.wanikani.com/radical*
@@ -16,17 +16,17 @@
    */
   function render(text) {
     // Do some custom replacements.
-    text = text.replace('#kan#', '<span class="kanji-highlight highlight-kanji" rel="tooltip" data-original-title="Kanji">');
-    text = text.replace('#/kan#', '</span>');
+    text = text.replace(/#kan#/g, '<span class="kanji-highlight highlight-kanji" rel="tooltip" data-original-title="Kanji">');
+    text = text.replace(/#\/kan#/g, '</span>');
 
-    text = text.replace('#rad#', '<span class="radical-highlight highlight-radical" rel="tooltip" data-original-title="Radical">');
-    text = text.replace('#/rad#', '</span>');
+    text = text.replace(/#rad#/g, '<span class="radical-highlight highlight-radical" rel="tooltip" data-original-title="Radical">');
+    text = text.replace(/#\/rad#/g, '</span>');
 
-    text = text.replace('#read#', '<span class="reading-highlight highlight-reading" rel="tooltip" data-original-title="Reading">');
-    text = text.replace('#/read#', '</span>');
+    text = text.replace(/#read#/g, '<span class="reading-highlight highlight-reading" rel="tooltip" data-original-title="Reading">');
+    text = text.replace(/#\/read#/g, '</span>');
 
-    text = text.replace('#voc#', '<span class="vocabulary-highlight highlight-vocabulary" rel="tooltip" data-original-title="Vocabulary">');
-    text = text.replace('#/voc#', '</span>');
+    text = text.replace(/#voc#/g, '<span class="vocabulary-highlight highlight-vocabulary" rel="tooltip" data-original-title="Vocabulary">');
+    text = text.replace(/#\/voc#/g, '</span>');
 
     // Render the rest as markdown.
     return (new Showdown.converter()).makeHtml(text);
