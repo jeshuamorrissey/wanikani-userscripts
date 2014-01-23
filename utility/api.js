@@ -65,7 +65,7 @@
      * Get the API base URL.
      */
     apiURL: function(action) {
-      return 'http://www.wanikani.com/api/v1.2/user/' + WaniKaniAPI.getAPIKey() + '/' + action;
+      return 'https://www.wanikani.com/api/v1.2/user/' + WaniKaniAPI.getAPIKey() + '/' + action;
     },
 
     /**
