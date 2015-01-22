@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+
+  "name": "WaniKani External Definitions",
+  "description": "Display a frame with the external definition of a vocab/kanji.",
+  "version": "1.0",
+
+  "permissions": [
+    "*://www.wanikani.com/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": [
+          "*://www.wanikani.com/lesson/session*",
+          "*://www.wanikani.com/kanji/*",
+          "*://www.wanikani.com/vocabulary/*"
+      ],
+      "js": ["js/jisho-frame-placer.js"],
+      "css": []
+    }
+  ],
+  
+  "options_page": "configuration-interface.html",
+  
+  "web_accessible_resources": [
+    "js/jisho-frame-placer-src.js"
+  ]
+}
