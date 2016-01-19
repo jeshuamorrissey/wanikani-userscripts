@@ -2,16 +2,17 @@
 // @name       WaniKani Item Annotator
 // @version    1.0
 // @description  Annoates item on the radical, kanji and vocab pages with their SRS level.
-// @require https://domready.googlecode.com/files/domready.js
 // @require https://raw.github.com/jeshuam/wanikani-userscripts/master/utility/api.js
-// @include http://www.wanikani.com/radical*
-// @include http://www.wanikani.com/kanji*
-// @include http://www.wanikani.com/vocabulary*
-// @include http://www.wanikani.com/account*
-// @copyright  2013, Jeshua
+// @include https://www.wanikani.com/radical*
+// @include https://www.wanikani.com/kanji*
+// @include https://www.wanikani.com/vocabulary*
+// @include https://www.wanikani.com/account*
+// @include https://www.wanikani.com/level/*
+// @exclude https://www.wanikani.com/level/*/*
+// @copyright  2016, Jeshua
 // ==/UserScript==
 
-DomReady.ready(function() {
+$(function() {
   /**
    * Mapping of SRS --> Object, where the object contains a series
    * of transformation colors. These transformations will be applied
@@ -60,8 +61,16 @@ DomReady.ready(function() {
    * object need only contain the SRS level of the element.
    */
   function main(itemMapping, target) {
-    // Find all characters on the page.
-    var elements = document.querySelectorAll('.character-item');
+    // If the target specifies a level, then be more specific.
+    var elements = undefined;
+    if (target.indexOf('/') >= 0) {
+      var target_split = target.split('/');
+      var target = target_split[0];
+      var level = target_split[1];
+      elements = document.querySelectorAll('#level-' + level + '-' + target + ' .character-item')
+    } else {
+      elements = document.querySelectorAll('.character-item');
+    }
 
     for (var i in elements) {
       var element = elements[i];
@@ -90,7 +99,7 @@ DomReady.ready(function() {
 
       // If we couldn't find the SRS information for the element, or the element hasn't been unlocked
       // yet, just ignore it.
-      if (!japanese.srs) {
+      if (japanese == undefined || !japanese.srs) {
         continue;
       }
 
@@ -106,11 +115,15 @@ DomReady.ready(function() {
   }
 
   // Determine which API call we are going to make.
-  var target = 'kanji';
+  var targets = ['kanji'];
   if (window.location.href.indexOf('vocabulary') >= 0) {
-    target = 'vocabulary';
+    targets = ['vocabulary'];
   } else if (window.location.href.indexOf('radicals') >= 0) {
-    target = 'radicals';
+    targets = ['radicals'];
+  } else if (window.location.href.indexOf('level') >= 0) {
+    var url_split = window.location.href.split('/');
+    var level = url_split[url_split.length - 1];
+    targets = ['kanji/' + level, 'vocabulary/' + level, 'radicals/' + level];
   }
 
   // Die if the API key isn't found.
@@ -119,47 +132,52 @@ DomReady.ready(function() {
   }
 
   // Load the API data.
-  WaniKaniAPI.load(WaniKaniAPI.apiURL(target), function(xhr) {
-    // Parse the response.
-    var response = JSON.parse(xhr.response);
+  for (var i in targets) {
+    // Need to closure the target parameter, otherwise weird stuff starts to happen.
+    (function(target) {
+      WaniKaniAPI.load(WaniKaniAPI.apiURL(target), function(xhr) {
+        // Parse the response.
+        var response = JSON.parse(xhr.response);
 
-    // Build up an item mapping from Kanji --> Information
-    var itemMapping = {};
+        // Build up an item mapping from Kanji --> Information
+        var itemMapping = {};
 
-    // Get the actual request information. If the target is vocabulary, for some reason
-    // we have to got an additional level into 'request_information.general'. This is
-    // probably to account for specialised vocab which will be added later.
-    var information = response.requested_information;
-    if (target === 'vocabulary') {
-      information = information.general;
-    }
+        // Get the actual request information. If the target is vocabulary, for some reason
+        // we have to got an additional level into 'request_information.general'. This is
+        // probably to account for specialised vocab which will be added later.
+        var information = response.requested_information;
+        if (target === 'vocabulary') {
+          information = information.general;
+        }
 
-    for (var i in information) {
-      var item = information[i];
+        for (var i in information) {
+          var item = information[i];
 
-      // Extract the character (Kanji) from the item.
-      var character = item.character;
+          // Extract the character (Kanji) from the item.
+          var character = item.character;
 
-      // If we are looking at radicals, use the meaning instead (convert the meaning to
-      // the 'user friendly' format).
-      if (target === 'radicals') {
-        character = item.meaning.toLowerCase().replace('-', ' ');
-      }
+          // If we are looking at radicals, use the meaning instead (convert the meaning to
+          // the 'user friendly' format).
+          if (target === 'radicals') {
+            character = item.meaning.toLowerCase().replace('-', ' ');
+          }
 
-      // Get the SRS level from the item. The 'user_specific' object will be `null` if the item
-      // hasn't been unlocked yet. In this case, just set the SRS level to `null`.
-      var srs = null;
-      if (item.user_specific) {
-        srs = item.user_specific.srs;
-      }
+          // Get the SRS level from the item. The 'user_specific' object will be `null` if the item
+          // hasn't been unlocked yet. In this case, just set the SRS level to `null`.
+          var srs = null;
+          if (item.user_specific) {
+            srs = item.user_specific.srs;
+          }
 
-      // Build the mapping for this character.
-      itemMapping[character] = {
-        'srs': srs
-      };
-    }
+          // Build the mapping for this character.
+          itemMapping[character] = {
+            'srs': srs
+          };
+        }
 
-    // Actually do stuff with this mapping.
-    main(itemMapping, target);
-  });
+        // Actually do stuff with this mapping.
+        main(itemMapping, target);
+      });
+    })(targets[i]);
+  }
 });
