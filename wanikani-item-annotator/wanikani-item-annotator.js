@@ -1,11 +1,14 @@
 // ==UserScript==
 // @name       WaniKani Item Annotator
-// @version    1.0
+// @version    2.0
 // @description  Annoates item on the radical, kanji and vocab pages with their SRS level.
 // @require https://raw.github.com/jeshuam/wanikani-userscripts/master/utility/api.js
-// @include https://www.wanikani.com/radical*
+// @include https://www.wanikani.com/radicals*
+// @exclude https://www.wanikani.com/radicals/*
 // @include https://www.wanikani.com/kanji*
+// @exclude https://www.wanikani.com/kanji/*
 // @include https://www.wanikani.com/vocabulary*
+// @exclude https://www.wanikani.com/vocabulary/*
 // @include https://www.wanikani.com/account*
 // @include https://www.wanikani.com/level/*
 // @exclude https://www.wanikani.com/level/*/*
@@ -45,13 +48,6 @@ $(function() {
       'border': '#0093dd',
       'gradient_start': '#0af',
       'gradient_end': '#0093dd'
-    },
-
-    'burned': {
-      'background': '#434343',
-      'border': '#434343',
-      'gradient_start': '#555',
-      'gradient_end': '#434343'
     }
   };
 
@@ -105,6 +101,11 @@ $(function() {
 
       // Find the corresponding colors.
       var colors = newColors[japanese.srs];
+      
+      // If the item is burned, then ignore it.
+      if (!colors) {
+        continue;
+      }
 
       // Actually change the properties. This was essentially taken from the elements already on the page.
       element.style['background'] =
@@ -126,8 +127,38 @@ $(function() {
     targets = ['kanji/' + level, 'vocabulary/' + level, 'radicals/' + level];
   }
 
-  // Die if the API key isn't found.
-  if (!WaniKaniAPI.getAPIKey) {
+  // If we are on the account page, populate the API key (and maybe move back
+  // to where we were before).
+  if (window.location.href.indexOf('account') >= 0) {
+    var api_key = document.querySelector('#api-button').parentNode
+                          .querySelector('input').value;
+
+    WaniKaniAPI.setAPIKey(api_key);
+
+    // From http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+    function getParameterByName(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+      var results = regex.exec(location.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    // Notify the user, then redirect if necessary.
+    var redirect = getParameterByName('prev');
+    if (redirect) {
+      window.alert('API key set to ' + api_key + '! Going back to '  + redirect);
+      window.location.href = redirect;
+    } else {
+      window.alert('API key set to ' + api_key + '!');
+    }
+    
+  }
+
+  // Die if the API key isn't found, redirect to the account page.
+  if (!WaniKaniAPI.getAPIKey()) {
+    if (window.confirm('Moving to settings page to fetch API key!')) {
+      window.location.href = '/account?prev=' + window.location.href;
+    }
     return;
   }
 
@@ -158,7 +189,7 @@ $(function() {
 
           // If we are looking at radicals, use the meaning instead (convert the meaning to
           // the 'user friendly' format).
-          if (target === 'radicals') {
+          if (target.indexOf('radicals') >= 0) {
             character = item.meaning.toLowerCase().replace('-', ' ');
           }
 
