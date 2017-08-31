@@ -9,10 +9,13 @@
 // @exclude https://www.wanikani.com/kanji/*
 // @include https://www.wanikani.com/vocabulary*
 // @exclude https://www.wanikani.com/vocabulary/*
-// @include https://www.wanikani.com/account*
+// @include https://www.wanikani.com/settings/account*
 // @include https://www.wanikani.com/level/*
 // @exclude https://www.wanikani.com/level/*/*
 // @copyright  2016, Jeshua
+// @grant        GM_registerMenuCommand
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
 $(function() {
@@ -101,7 +104,7 @@ $(function() {
 
       // Find the corresponding colors.
       var colors = newColors[japanese.srs];
-      
+
       // If the item is burned, then ignore it.
       if (!colors) {
         continue;
@@ -109,7 +112,7 @@ $(function() {
 
       // Actually change the properties. This was essentially taken from the elements already on the page.
       element.style['background'] =
-          colors.background 
+          colors.background
           + ' linear-gradient(to bottom, ' + colors.gradient_start + ', ' + colors.gradient_end + ')';
       element.style['borderColor'] = colors.border;
     }
@@ -129,9 +132,8 @@ $(function() {
 
   // If we are on the account page, populate the API key (and maybe move back
   // to where we were before).
-  if (window.location.href.indexOf('account') >= 0) {
-    var api_key = document.querySelector('#api-button').parentNode
-                          .querySelector('input').value;
+  if (window.location.href.indexOf('settings/account') >= 0) {
+    var api_key = document.querySelector('#user_api_key').value;
 
     WaniKaniAPI.setAPIKey(api_key);
 
@@ -151,13 +153,13 @@ $(function() {
     } else {
       window.alert('API key set to ' + api_key + '!');
     }
-    
+
   }
 
   // Die if the API key isn't found, redirect to the account page.
   if (!WaniKaniAPI.getAPIKey()) {
     if (window.confirm('Moving to settings page to fetch API key!')) {
-      window.location.href = '/account?prev=' + window.location.href;
+      window.location.href = '/settings/account?prev=' + window.location.href;
     }
     return;
   }
