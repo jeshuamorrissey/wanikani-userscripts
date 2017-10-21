@@ -95,7 +95,7 @@ $(function() {
       }
 
       // Find the actual japanese SRS information.
-      japanese = itemMapping[japanese];
+      japanese = itemMapping[japanese.trim()];
 
       // If we couldn't find the SRS information for the element, or the element hasn't been unlocked
       // yet, just ignore it.
