@@ -17,23 +17,23 @@
         // to where we were before).
         if (window.location.href.indexOf('settings/account') >= 0) {
           key = document.querySelector('#user_api_key').value;
-          this.setAPIKey(api_key);
+          WaniKaniAPI.setAPIKey(key);
 
           // From http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-          function getParameterByName(name) {
+          let getParameterByName = function(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
             var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
             var results = regex.exec(location.search);
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-          }
+          };
 
           // Notify the user, then redirect if necessary.
           var redirect = getParameterByName('prev');
           if (redirect) {
-            window.alert('API key set to ' + api_key + '! Going back to '  + redirect);
+            window.alert('API key set to ' + key + '! Going back to ' + redirect);
             window.location.href = redirect;
           } else {
-            window.alert('API key set to ' + api_key + '!');
+            window.alert('API key set to ' + key + '!');
           }
         } else {
           if (window.confirm('Moving to settings page to fetch API key!')) {
@@ -62,39 +62,6 @@
     },
 
     /**
-     * Get the API key from the DOM. Will only do something if the user is on the
-     * /account page.
-     */
-    setAPIKeyFromDOM: function() {
-      if (window.location.href.indexOf('account') >= 0) {
-        // Make sure the API key isn't already there.
-        if (WaniKaniAPI.getAPIKey()) {
-          return;
-        }
-
-        // Required function because the API key has no ID on it. :(
-        function getAPIKeyFromDom() {
-          // Look through all .span6's for the API key. We can identify the API key by the
-          // placeholder text.
-          var elementsToSearch = document.querySelectorAll('.span6');
-          for (var i in elementsToSearch) {
-            var element = elementsToSearch[i];
-            if (element.placeholder === 'Key has not been generated') {
-              return element.value.trim();
-            }
-          }
-
-          // Couldn't find it :(
-          return null;
-        }
-
-        // Find the API key.
-        WaniKaniAPI.setAPIKey(getAPIKeyFromDom());
-        alert('JeshuaM Scripts: API Key Saved! ' + WaniKaniAPI.getAPIKey());
-      }
-    },
-
-    /**
      * Get the API base URL.
      */
     apiURL: function(action) {
@@ -112,16 +79,17 @@
         xhr = new XMLHttpRequest();
       } else {
         var versions = ["MSXML2.XmlHttp.5.0",
-                        "MSXML2.XmlHttp.4.0",
-                        "MSXML2.XmlHttp.3.0",
-                        "MSXML2.XmlHttp.2.0",
-                        "Microsoft.XmlHttp"]
+          "MSXML2.XmlHttp.4.0",
+          "MSXML2.XmlHttp.3.0",
+          "MSXML2.XmlHttp.2.0",
+          "Microsoft.XmlHttp"
+        ]
 
-        for(var i = 0, len = versions.length; i < len; i++) {
+        for (var i = 0, len = versions.length; i < len; i++) {
           try {
             xhr = new ActiveXObject(versions[i]);
-            break;  
-          } catch(e) {
+            break;
+          } catch (e) {
 
           }
         }
@@ -129,16 +97,16 @@
 
       // Function to execute when the state of the XHR request changes.
       xhr.onreadystatechange = function() {
-        if(xhr.readyState < 4) {
+        if (xhr.readyState < 4) {
           return;
         }
 
-        if(xhr.status !== 200) {
+        if (xhr.status !== 200) {
           return;
         }
 
-        if(xhr.readyState === 4) {
-          callback(xhr);
+        if (xhr.readyState === 4) {
+          callback(JSON.parse(xhr.responseText));
         }
       };
 
@@ -151,7 +119,7 @@
   // Register some GreaseMonkey commands.
   GM_registerMenuCommand('JeshuaM Scripts: Change API Key', function() {
     var apiKey = prompt('Please enter your API key.', WaniKaniAPI.getAPIKey() || '');
-    if (apiKey != null) {
+    if (apiKey !== null) {
       WaniKaniAPI.setAPIKey(apiKey);
       alert('JeshuaM Scripts: API Key Saved! ' + apiKey);
     }
