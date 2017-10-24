@@ -230,6 +230,13 @@ function DisplayExampleSentences(known_vocab) {
           return;
         }
 
+        // Remove the old section.
+        let section_to_remove = document.querySelector('#examples-sentences-section');
+        if (section_to_remove !== null) {
+          section_to_remove.parentNode.removeChild(section_to_remove);
+        }
+
+        // Add the new section.
         let section = GetSectionWithExamplesSentences(known_vocab, data);
         let insertion_section = document.querySelector('div#supplement-voc-context-sentence');
         insertion_section.parentNode.insertBefore(section, insertion_section.nextSibling);
