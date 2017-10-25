@@ -185,29 +185,6 @@ function DisplayExampleSentences(known_vocab) {
 
   // Process the review page. TODO(jeshua): test this.
   else if (document.URL.indexOf('review/session') >= 0) {
-    // Display the information when the current item changes. Don't do this if they are
-    // supposed to enter the reading.
-    $.jStorage.listenKeyChange('currentItem', function(key) {
-      let currentVocab = $.jStorage.get(key).voc;
-      GetExampleSentencesForVocabulary(currentVocab, function(data) {
-        // Make sure the current vocabulary still matches what is on the page (this
-        // is to prevent multiple sentence boxes from showing up).
-        if ($.jStorage.get(key).voc != currentVocab) {
-          return;
-        }
-
-        if (data.length === 0) {
-          return;
-        }
-
-        if (document.querySelector('#answer-form input').attributes.lang != 'ja') {
-          let section = GetSectionWithExamplesSentences(known_vocab, data);
-          let insertion_section = document.querySelector('div#all-info');
-          insertion_section.parentNode.insertBefore(section, insertion_section.nextSibling);
-        }
-      });
-    });
-
     // If the 'all-info' button is pressed, then display it.
     document.querySelector('div#all-info').onclick = function() {
       GetExampleSentencesForVocabulary($.jStorage.get('currentItem').voc, function(data) {
@@ -215,8 +192,14 @@ function DisplayExampleSentences(known_vocab) {
           return;
         }
 
+        // Remove the old section.
+        let section_to_remove = document.querySelector('#examples-sentences-section');
+        if (section_to_remove !== null) {
+          section_to_remove.parentNode.removeChild(section_to_remove);
+        }
+
         let section = GetSectionWithExamplesSentences(known_vocab, data);
-        let insertion_section = document.querySelector('div#all-info');
+        let insertion_section = document.querySelector('section#item-info-context-sentences');
         insertion_section.parentNode.insertBefore(section, insertion_section.nextSibling);
       });
     };
