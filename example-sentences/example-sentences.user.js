@@ -76,7 +76,7 @@ function DisplayExampleSentences(known_vocab) {
 
     // Review page.
     else if (document.URL.indexOf('review/session') != -1) {
-      return $.jStorage.get('currentItem').voc;
+      return document.querySelector('div.vocabulary span').innerText.trim();
     }
 
     // Lesson page.
@@ -188,7 +188,7 @@ function DisplayExampleSentences(known_vocab) {
   else if (document.URL.indexOf('review/session') >= 0) {
     // If the 'all-info' button is pressed, then display it.
     document.querySelector('div#all-info').onclick = function() {
-      GetExampleSentencesForVocabulary($.jStorage.get('currentItem').voc, function(data) {
+      GetExampleSentencesForVocabulary(document.querySelector('div.vocabulary span').innerText.trim(), function(data) {
         if (data.length === 0) {
           return;
         }
@@ -201,7 +201,7 @@ function DisplayExampleSentences(known_vocab) {
 
         let section = GetSectionWithExamplesSentences(known_vocab, data);
         let insertion_section = document.querySelector('section#item-info-context-sentences');
-        insertion_section.parentNode.insertBefore(section, insertion_section.nextSibling);
+        insertion_section.parentNode.appendChild(section);
       });
     };
   }
