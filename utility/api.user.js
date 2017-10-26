@@ -1,3 +1,13 @@
+// ==UserScript==
+// @name WaniKani API
+// @version 1.0
+// @description  Tools for accessing the WaniKani API without having to use jQuery.
+// @copyright 2017 jeshuam
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @grant       GM_registerMenuCommand
+// ==/UserScript==
+
 /**
  * WaniKani API utilities, for use within userscripts.
  * Just place this script in the @require section of the userscript header.
