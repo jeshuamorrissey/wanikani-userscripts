@@ -2,7 +2,7 @@
 // @name WaniKani Example Sentences
 // @version 2.1
 // @description  Displays additional examples sentences for the given vocabulary.
-// @require https://raw.github.com/jeshuam/wanikani-userscripts/master/utility/api.js
+// @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226211
 // @match https://www.wanikani.com/settings/account
 // @match https://www.wanikani.com/vocabulary/*
 // @match https://www.wanikani.com/review/session*
