@@ -71,7 +71,7 @@ function DisplayExampleSentences(known_vocab) {
   function GetVocabularyKanjiFromPage() {
     // Vocabulary information page.
     if (document.URL.indexOf('vocabulary') != -1) {
-      return $('header span.vocabulary-icon span').text().trim();
+      return document.querySelector('header span.vocabulary-icon span').innerText.trim();
     }
 
     // Review page.
