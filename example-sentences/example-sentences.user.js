@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name WaniKani Example Sentences
-// @version 2.1
+// @version 3.1
 // @description  Displays additional examples sentences for the given vocabulary.
 // @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226222
 // @match https://www.wanikani.com/settings/account*
