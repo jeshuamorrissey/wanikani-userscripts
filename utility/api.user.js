@@ -21,40 +21,7 @@
      * Get the API key from storage and return it. If it doesn't exist, return null.
      */
     getAPIKey: function() {
-      let key = GM_getValue(API_RETREIVAL_KEY, '');
-      if (key === '') {
-        // If we are on the account page, populate the API key (and maybe move back
-        // to where we were before).
-        if (window.location.href.indexOf('settings/account') >= 0) {
-          key = document.querySelector('#user_api_key').value;
-          WaniKaniAPI.setAPIKey(key);
-
-          // From http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-          let getParameterByName = function(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-            var results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-          };
-
-          // Notify the user, then redirect if necessary.
-          var redirect = getParameterByName('prev');
-          if (redirect) {
-            window.alert('API key set to ' + key + '! Going back to ' + redirect);
-            window.location.href = redirect;
-          } else {
-            window.alert('API key set to ' + key + '!');
-          }
-        } else {
-          if (window.confirm('Moving to settings page to fetch API key!')) {
-            window.location.href = '/settings/account?prev=' + window.location.href;
-          }
-
-          return null;
-        }
-      }
-
-      return key;
+      return GM_getValue(API_RETREIVAL_KEY, undefined);
     },
 
     /**
@@ -140,3 +107,38 @@
     alert('JeshuaM Scripts: API Key Deleted!');
   });
 })();
+
+//////////////////////////////
+/////// Start Function ///////
+//////////////////////////////
+document.addEventListener('DOMContentLoaded', function() {
+  if (WaniKaniAPI.getAPIKey() === undefined) {
+    // If we are on the account page, populate the API key (and maybe move back
+    // to where we were before).
+    if (window.location.href.indexOf('settings/account') >= 0) {
+      key = document.querySelector('#user_api_key').value;
+      WaniKaniAPI.setAPIKey(key);
+
+      // From http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+      let getParameterByName = function(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+      };
+
+      // Notify the user, then redirect if necessary.
+      var redirect = getParameterByName('prev');
+      if (redirect) {
+        window.alert('WANIKANI-API: API key set to ' + key + '! Going back to ' + redirect);
+        window.location.href = redirect;
+      } else {
+        window.alert('WANIKANI-API: API key set to ' + key + '!');
+      }
+    } else {
+      if (window.confirm('WANIKANI-API: Moving to settings page to fetch API key!')) {
+        window.location.href = '/settings/account?prev=' + window.location.href;
+      }
+    }
+  }
+});
