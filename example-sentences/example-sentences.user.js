@@ -2,7 +2,7 @@
 // @name WaniKani Example Sentences
 // @version 2.1
 // @description  Displays additional examples sentences for the given vocabulary.
-// @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226211
+// @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226222
 // @match https://www.wanikani.com/settings/account*
 // @match https://www.wanikani.com/vocabulary/*
 // @match https://www.wanikani.com/review/session*
@@ -233,10 +233,10 @@ function DisplayExampleSentences(known_vocab) {
 //////////////////////////////
 /////// Start Function ///////
 //////////////////////////////
-window.onload = function() {
+document.addEventListener('DOMContentLoaded', function() {
   // Get their API key. If we are on the account page, go no further.
-  let API_KEY = WaniKaniAPI.getAPIKey();
-  if (window.location.href.indexOf('account') >= 0) {
+  if (WaniKaniAPI.getAPIKey() === undefined) {
+    console.log('EXAMPLE-SENTENCES: No WaniKani API key found!');
     return;
   }
 
@@ -272,4 +272,4 @@ window.onload = function() {
   } else {
     DisplayExampleSentences(unlockedVocab);
   }
-};
+});
