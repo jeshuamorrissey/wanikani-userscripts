@@ -3,7 +3,7 @@
 // @version 2.1
 // @description  Displays additional examples sentences for the given vocabulary.
 // @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226211
-// @match https://www.wanikani.com/settings/account
+// @match https://www.wanikani.com/settings/account*
 // @match https://www.wanikani.com/vocabulary/*
 // @match https://www.wanikani.com/review/session*
 // @match https://www.wanikani.com/lesson/session*
@@ -13,6 +13,7 @@
 // @grant       GM_setValue
 // @grant       GM_registerMenuCommand
 // @grant       GM_addStyle
+// @namespace https://greasyfork.org/users/27794
 // ==/UserScript==
 
 //////////////////////////
