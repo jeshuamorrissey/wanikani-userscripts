@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name WaniKani Example Sentences
-// @version 3.1
+// @version 2.1
 // @description  Displays additional examples sentences for the given vocabulary.
 // @require https://greasyfork.org/scripts/34539-wanikani-api/code/WaniKani%20API.js?version=226222
 // @match https://www.wanikani.com/settings/account*
@@ -81,7 +81,7 @@ function DisplayExampleSentences(known_vocab) {
 
     // Lesson page.
     else if (document.URL.indexOf('lesson/session') != -1) {
-      return $.jStorage.get('l/currentLesson').voc;
+      return document.querySelector('div#main-info div#character').innerText.trim();
     }
 
     // Not on a valid page.
@@ -171,9 +171,8 @@ function DisplayExampleSentences(known_vocab) {
 
   // Process the vocabulary page.
   if (document.URL.indexOf('vocabulary') >= 0) {
-    let vocabulary = document.querySelector('header span.vocabulary-icon span').innerText;
-
-    GetExampleSentencesForVocabulary(vocabulary, function(data) {
+    let vocab = GetVocabularyKanjiFromPage();
+    GetExampleSentencesForVocabulary(vocab, function(data) {
       if (data.length === 0) {
         return;
       }
@@ -188,7 +187,8 @@ function DisplayExampleSentences(known_vocab) {
   else if (document.URL.indexOf('review/session') >= 0) {
     // If the 'all-info' button is pressed, then display it.
     document.querySelector('div#all-info').onclick = function() {
-      GetExampleSentencesForVocabulary(document.querySelector('div.vocabulary span').innerText.trim(), function(data) {
+      let vocab = GetVocabularyKanjiFromPage();
+      GetExampleSentencesForVocabulary(vocab, function(data) {
         if (data.length === 0) {
           return;
         }
@@ -208,8 +208,9 @@ function DisplayExampleSentences(known_vocab) {
 
   // Process the lesson page.
   else if (document.URL.indexOf('lesson/session') >= 0) {
-    $.jStorage.listenKeyChange('l/currentLesson', function(key) {
-      GetExampleSentencesForVocabulary($.jStorage.get(key).voc, function(data) {
+    let observer = new MutationObserver(function() {
+      let vocab = GetVocabularyKanjiFromPage();
+      GetExampleSentencesForVocabulary(vocab, function(data) {
         if (data.length === 0) {
           return;
         }
@@ -226,6 +227,8 @@ function DisplayExampleSentences(known_vocab) {
         insertion_section.parentNode.insertBefore(section, insertion_section.nextSibling);
       });
     });
+    
+    observer.observe(document.querySelector('div#main-info'), {subtree: true, childList: true});
   }
 }
 
