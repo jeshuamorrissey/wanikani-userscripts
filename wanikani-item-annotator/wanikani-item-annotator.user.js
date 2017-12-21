@@ -60,7 +60,7 @@ function ColouriseItems(itemMapping, target) {
   let elements = undefined;
   if (target.indexOf('/') >= 0) {
     let target_split = target.split('/');
-    let target = target_split[0];
+    target = target_split[0];
     let level = target_split[1];
     elements = document.querySelectorAll('#level-' + level + '-' + target + ' .character-item')
   } else {
