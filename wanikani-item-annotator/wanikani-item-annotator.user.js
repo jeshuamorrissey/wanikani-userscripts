@@ -60,7 +60,7 @@ function ColouriseItems(itemMapping, target) {
   let elements = undefined;
   if (target.indexOf('/') >= 0) {
     let target_split = target.split('/');
-    let target = target_split[0];
+    target = target_split[0];
     let level = target_split[1];
     elements = document.querySelectorAll('#level-' + level + '-' + target + ' .character-item')
   } else {
@@ -120,12 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Determine which API call we are going to make.
   let targets = ['kanji'];
-  if (window.URL.indexOf('vocabulary') >= 0) {
+  if (window.location.href.indexOf('vocabulary') >= 0) {
     targets = ['vocabulary'];
-  } else if (window.URL.indexOf('radicals') >= 0) {
+  } else if (window.location.href.indexOf('radicals') >= 0) {
     targets = ['radicals'];
-  } else if (window.URL.indexOf('level') >= 0) {
-    let url_split = window.URL.split('/');
+  } else if (window.location.href.indexOf('level') >= 0) {
+    let url_split = window.location.href.split('/');
     let level = url_split[url_split.length - 1];
     targets = ['kanji/' + level, 'vocabulary/' + level, 'radicals/' + level];
   }
@@ -134,10 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
   for (let target of targets) {
     // Need to closure the target parameter, otherwise weird stuff starts to happen.
     (function(target) {
-      WaniKaniAPI.load(WaniKaniAPI.apiURL(target), function(xhr) {
-        // Parse the response.
-        let response = JSON.parse(xhr.response);
-
+      WaniKaniAPI.load(WaniKaniAPI.apiURL(target), function(response) {
         // Build up an item mapping from Kanji --> Information
         let itemMapping = {};
 
