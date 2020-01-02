@@ -111,7 +111,13 @@ function ColouriseItems(itemMapping, target) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+if(document.readyState !== 'loading' ) {
+    main();
+} else {
+    document.addEventListener('DOMContentLoaded', main);
+}
+
+function main() {
   // Make sure the API key is available.
   if (WaniKaniAPI.getAPIKey() === undefined) {
     console.log('ITEM-ANNOTATOR: No WaniKani API key found!');
@@ -174,4 +180,4 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     })(target);
   }
-});
+}
